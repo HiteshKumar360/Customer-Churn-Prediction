@@ -159,9 +159,6 @@ if page == "🏠 Customer Predictor":
     predict_btn = st.button("Predict Churn Risk", type="primary", use_container_width=True)
 
     if predict_btn:
-        # All encoding + feature engineering now lives in src/preprocessing.py
-        # and is called via src/predict.py — keeps this file free of
-        # duplicated logic that must be kept in sync with the notebooks.
         raw_inputs = {
             "gender": gender,
             "senior_citizen": senior_citizen,
@@ -189,7 +186,6 @@ if page == "🏠 Customer Predictor":
         churn_proba = result["churn_probability"]
         will_churn = result["will_churn"]
 
-        # Assign segment using nearest segment centroid logic (simplified: by churn_proba rank)
         seg_means = df.groupby("segment_names")["churn_probability"].mean().sort_values()
         if churn_proba <= seg_means.iloc[0] + (seg_means.iloc[1] - seg_means.iloc[0]) / 2:
             segment_names = seg_means.index[0]
