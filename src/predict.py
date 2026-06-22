@@ -8,12 +8,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MODEL_PATH = os.path.join(BASE_DIR, "models", "lgbm_churn_model.pkl")
 FEATURES_PATH = os.path.join(BASE_DIR, "models", "feature_names.pkl")
 
-# Best threshold selected in notebooks/03_model.ipynb (highest F1, 79% recall)
+
 DEFAULT_THRESHOLD = 0.35
 
 
 def load_artifacts():
-    """Loads the trained model and the exact feature column order it expects."""
     model = joblib.load(MODEL_PATH)
     feature_names = joblib.load(FEATURES_PATH)
     return model, feature_names
@@ -27,7 +26,6 @@ def predict_single(raw_inputs: dict, model=None, feature_names=None,
     row = build_customer_row(raw_inputs)
     input_df = pd.DataFrame([row])
 
-    # Guard against any missing engineered columns (defensive, should be empty)
     missing = [f for f in feature_names if f not in input_df.columns]
     for m in missing:
         input_df[m] = 0
