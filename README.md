@@ -4,7 +4,7 @@ An end-to-end machine learning project that predicts customer churn for a teleco
 company, segments customers into actionable groups, and recommends targeted
 retention offers — built on the Telco Customer Churn dataset.
 
-**[Live Dashboard →](https://customer-churn-prediction-d7ma2oof4j4u88e6dcyguc.streamlit.app)** 
+**[Live Dashboard](https://customer-churn-prediction-d7ma2oof4j4u88e6dcyguc.streamlit.app)** 
 
 ---
 
