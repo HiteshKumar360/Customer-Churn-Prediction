@@ -83,11 +83,10 @@ internet service, and payment method.
 `num_services`, `is_new_customer`, `CLV`, `avg_service_cost`, `high_risk_flag`.
 All 6 showed correlation > 0.15 with churn.
 
-**3. Model Training** — Trained a LightGBM classifier, balanced the training
-set with SMOTE (73/27 → 50/50), tuned hyperparameters with
-RandomizedSearchCV, and selected a decision threshold of 0.35 (vs. the default
-0.5) to prioritize recall — missing a churner costs far more in lost CLV than
-a false alarm costs in a retention offer. Tracked all experiments with MLflow.
+**3. Model Training** — Trained a LightGBM classifier, tuned hyperparameters with
+RandomizedSearchCV, and The threshold was reduced to 0.35 to improve churn recall, 
+prioritizing the identification of potential churners over minimizing false positives. 
+Tracked all experiments with MLflow.
 
 **4. Segmentation** — Used K-Means (K=3, selected via silhouette score) on
 tenure, monthly charges, number of services, and predicted churn probability
