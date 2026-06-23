@@ -47,22 +47,23 @@ data/raw/telco_churn_raw.csv
 ```
 customer-churn/
 ├── app/
-│   └── streamlit_app.py       
+│   └── streamlit_app.py
 ├── data/
-│   ├── raw/                  
-│   └── processed/               
+│   ├── raw/
+│   └── processed/
 ├── models/
-│   ├── lgbm_churn_model.pkl     
-│   └── feature_names.pkl        
+│   ├── lgbm_churn_model.pkl
+│   └── feature_names.pkl
 ├── notebooks/
-│   ├── 01_eda.ipynb              
+│   ├── 01_eda.ipynb
 │   ├── 02_feature_engineering.ipynb
-│   ├── 03_model.ipynb            
-│   └── 04_segments.ipynb        
+│   ├── 03_model.ipynb
+│   └── 04_segments.ipynb
 ├── src/
-│   ├── preprocessing.py          
-│   ├── predict.py                
-│   └── train_model.py            
+│   ├── preprocessing.py
+│   ├── predict.py
+│   └── train_model.py
+├── .gitignore
 ├── requirements.txt
 └── README.md
 ```
