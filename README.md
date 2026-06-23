@@ -84,7 +84,7 @@ internet service, and payment method.
 All 6 showed correlation > 0.15 with churn.
 
 **3. Model Training** — Trained a LightGBM classifier, tuned hyperparameters with
-RandomizedSearchCV, and The threshold was reduced to 0.35 to improve churn recall, 
+RandomizedSearchCV, and the threshold was reduced to 0.35 to improve churn recall, 
 prioritizing the identification of potential churners over minimizing false positives. 
 Tracked all experiments with MLflow.
 
