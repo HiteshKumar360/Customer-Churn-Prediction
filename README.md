@@ -4,7 +4,7 @@ An end-to-end machine learning project that predicts customer churn for a teleco
 company, segments customers into actionable groups, and recommends targeted
 retention offers — built on the Telco Customer Churn dataset.
 
-**[Live Dashboard](https://customer-churn-prediction-d7ma2oof4j4u88e6dcyguc.streamlit.app)**
+**[Live Dashboard](http://13.53.185.209/churn/)**
 
 ---
 
@@ -19,6 +19,9 @@ retention offers — built on the Telco Customer Churn dataset.
 **Model Performance — ROC Curve & Confusion Matrix**
 ![Model Performance](screenshots/03_model_performance.png)
 
+**A/B Test Simulation — Retention Offer Impact**
+![A/B Test Results](screenshots/ab_test_results.png)
+
 ---
 
 ## Overview
@@ -30,6 +33,8 @@ a complete pipeline — from raw data to a deployed, interactive dashboard — t
 - Explains *why* using SHAP feature importance
 - Segments all customers into 3 actionable personas using K-Means
 - Recommends a specific retention offer per customer based on their segment
+- Simulates an A/B testing framework to demonstrate how retention interventions
+  would be statistically validated against a control group
 
 | Metric | Score |
 |---|---|
@@ -67,7 +72,8 @@ customer-churn/
 ├── images/
 │   ├── 01_predictor.png
 │   ├── 02_segment.png
-│   └── 03_model_performance.png
+│   ├── 03_model_performance.png
+│   └── ab_test_results.png
 ├── models/
 │   ├── lgbm_churn_model.pkl    
 │   └── feature_names.pkl      
@@ -80,7 +86,8 @@ customer-churn/
 │   ├── __init__.py
 │   ├── preprocessing.py         
 │   ├── predict.py              
-│   └── train_model.py          
+│   ├── train_model.py          
+│   └── ab_test.py              
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -91,7 +98,7 @@ customer-churn/
 ## Pipeline
 
 ```
-Raw data → EDA → Feature Engineering → Model Training → Segmentation → Dashboard
+Raw data → EDA → Feature Engineering → Model Training → Segmentation → A/B Test Simulation → Dashboard
 ```
 
 **Phase 1 — EDA**
@@ -121,14 +128,24 @@ into three personas:
 | At Risk | 2,421 | 57.0% | $883 | Contract upgrade offer |
 | Fence Sitters | 2,100 | 7.0% | $956 | Service bundle discount |
 
-**Phase 5 — Dashboard**
-A 4-page Streamlit app: live customer churn predictor, segment explorer with PCA
-visualization, model performance metrics (evaluated on held-out test set),
-and business insights.
+**Phase 5 — A/B Test Simulation**
+Built a simulated A/B testing framework (`src/ab_test.py`) to demonstrate the
+methodology for validating retention interventions: at-risk customers (churn
+probability > 0.35) are randomly split into control and treatment groups, a
+retention-offer effect is simulated on the treatment group, and a chi-square
+test checks whether the resulting difference in churn rate is statistically
+significant. See the [A/B Test Simulation](#ab-test-simulation) section below
+for full methodology and an important caveat on interpreting the result.
 
-**Phase 6 — MLOps**
+**Phase 6 — Dashboard**
+A 5-page Streamlit app: live customer churn predictor, segment explorer with PCA
+visualization, model performance metrics (evaluated on held-out test set),
+business insights, and the A/B test simulation. Self-hosted on AWS EC2 with an
+Nginx reverse proxy.
+
+**Phase 7 — MLOps**
 MLflow experiment tracking, clean `src/` pipeline with reusable
-`preprocessing.py`, `predict.py`, and `train_model.py` modules.
+`preprocessing.py`, `predict.py`, `train_model.py`, and `ab_test.py` modules.
 
 ---
 
@@ -147,10 +164,52 @@ MLflow experiment tracking, clean `src/` pipeline with reusable
 
 ---
 
+## A/B Test Simulation
+
+[#ab-test-simulation](#ab-test-simulation)
+
+![A/B Test Results](screenshots/ab_test_results.png)
+
+**Methodology**
+
+1. Score every customer with the trained LightGBM model
+2. Filter to at-risk customers (churn probability > 0.35, matching the
+   dashboard's decision threshold)
+3. Randomly split at-risk customers into **control** (no offer) and
+   **treatment** (simulated retention offer) groups
+4. Apply an assumed 15% relative reduction in churn probability to the
+   treatment group
+5. Simulate churn outcomes and compare the two groups using a chi-square
+   significance test
+
+| Group | Churn Rate |
+|---|---|
+| Control | 67.8% |
+| Treatment | 55.4% |
+
+Chi-square test result: **p < 0.0001**
+
+**Important caveat:** This is a *simulation*, not a real-world experiment.
+The 15% treatment effect is an assumed input to the code, not an observed
+outcome — so the low p-value confirms the statistical test correctly
+detects a planted effect, not that a real retention offer would produce
+this exact result. This project demonstrates the A/B testing methodology
+(randomization, control/treatment comparison, significance testing, effect
+size reporting) that would be used to validate a real intervention once
+live experiment data is available.
+
+Try it yourself on the [live dashboard](http://13.53.185.209/churn/) under
+the **🧪 A/B Test Simulation** tab, or run it locally:
+```bash
+python -m src.ab_test
+```
+
+---
+
 ## Tech Stack
 
 `Python` `pandas` `scikit-learn` `LightGBM` `imbalanced-learn (SMOTE)` `SHAP`
-`MLflow` `Streamlit` `Plotly` `joblib`
+`MLflow` `Streamlit` `Plotly` `scipy` `joblib` `AWS EC2` `Nginx`
 
 ---
 
@@ -171,7 +230,10 @@ pip install -r requirements.txt
 #    processed data and trained model, OR retrain via CLI:
 python -m src.train_model
 
-# 5. Launch the dashboard
+# 5. (Optional) Run the A/B test simulation:
+python -m src.ab_test
+
+# 6. Launch the dashboard
 streamlit run app/streamlit_app.py
 ```
 
